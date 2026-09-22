@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SaveIQ – AI Savings Goal Tracker</title>
+
+  <!-- Inter & Plus Jakarta Sans Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS CDN with configuration -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            emerald: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            },
+            slate: {
+              850: '#151f32',
+              900: '#0f172a',
+              950: '#090d16',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js for analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body
+  class="bg-slate-50 text-slate-800 antialiased min-h-full flex flex-col font-sans selection:bg-emerald-100 selection:text-emerald-900">
+
+  <!-- Main Container -->
+  <div class="flex h-screen overflow-hidden">
+
+    <!-- DESKTOP SIDEBAR -->
+    <aside id="sidebar"
+      class="hidden md:flex md:flex-col w-64 bg-slate-900 text-slate-300 border-r border-slate-800 transition-all duration-300 z-30 select-none">
+
+      <!-- Brand / Logo -->
+      <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-900/30">
+            <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-extrabold text-xl tracking-tight text-white">Save<span
+                  class="text-emerald-400">IQ</span></span>
+              <span
+                class="text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">AI
+                v1</span>
+            </div>
+            <p class="text-xs text-slate-400 font-medium">Smart Goal Tracker</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+        <div class="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">Navigation</div>
+
+        <button data-nav="dashboard"
+          class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all group active-nav">
+          <i data-lucide="layout-dashboard" class="w-5 h-5 transition-colors text-emerald-400"></i>
+          <span>Dashboard</span>
+        </button>
+
+        <button data-nav="create-goal"
+          class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all group text-slate-400 hover:text-slate-100 hover:bg-slate-800/60">
+          <i data-lucide="plus-circle" class="w-5 h-5 transition-colors group-hover:text-emerald-400"></i>
+          <span>Create Savings Goal</span>
+        </button>
+
+        <button data-nav="my-goals"
+          class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all group text-slate-400 hover:text-slate-100 hover:bg-slate-800/60">
+          <i data-lucide="target" class="w-5 h-5 transition-colors group-hover:text-emerald-400"></i>
+          <span>My Goals</span>
+          <span id="nav-goals-badge"
+            class="ml-auto text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-bold border border-slate-700">0</span>
+        </button>
+
+        <button data-nav="ai-advice"
+          class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all group text-slate-400 hover:text-slate-100 hover:bg-slate-800/60">
+          <div class="relative">
+            <i data-lucide="bot" class="w-5 h-5 transition-colors group-hover:text-indigo-400"></i>
+            <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          </div>
+          <span>AI Financial Advice</span>
+          <span
+            class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Coach</span>
+        </button>
+
+        <button data-nav="notifications"
+          class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all group text-slate-400 hover:text-slate-100 hover:bg-slate-800/60">
+          <div class="relative">
+            <i data-lucide="bell" class="w-5 h-5 transition-colors group-hover:text-amber-400"></i>
+            <span id="nav-unread-dot" class="hidden absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-400"></span>
+          </div>
+          <span>Notifications</span>
+          <span id="nav-notif-badge"
+            class="ml-auto text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">0</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Mini Savings Widget -->
+      <div class="p-4 mx-4 mb-4 rounded-2xl bg-slate-850 border border-slate-800/80">
+        <div class="flex items-center justify-between text-xs text-slate-400 font-medium mb-1.5">
+          <span class="flex items-center gap-1.5"><i data-lucide="piggy-bank" class="w-3.5 h-3.5 text-emerald-400"></i>
+            Overall Progress</span>
+          <span id="sidebar-progress-percent" class="font-bold text-emerald-400">0%</span>
+        </div>
+        <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+          <div id="sidebar-progress-bar"
+            class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500"
+            style="width: 0%"></div>
+        </div>
+        <div class="mt-2.5 flex justify-between items-center text-[11px] text-slate-400">
+          <span id="sidebar-saved-amount" class="text-white font-semibold">₹0</span>
+          <span class="text-slate-500">of</span>
+          <span id="sidebar-target-amount" class="text-slate-300 font-semibold">₹0</span>
+        </div>
+      </div>
+
+      <!-- Quick Add & Reset Demo -->
+      <div class="p-4 border-t border-slate-800 space-y-2">
+        <button id="btn-quick-new-goal"
+          class="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-all hover:shadow-emerald-900/40">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Create New Goal</span>
+        </button>
+        <button id="btn-reset-demo"
+          class="w-full py-2 px-3 rounded-xl bg-slate-800/70 hover:bg-slate-800 text-slate-400 hover:text-slate-200 font-medium text-[11px] flex items-center justify-center gap-1.5 transition-all">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          <span>Reset Demo Data</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50">
+
+      <!-- TOP HEADER BAR -->
+      <header
+        class="h-16 bg-white border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between flex-shrink-0 z-20">
+
+        <!-- Mobile Drawer Toggle & App Title -->
+        <div class="flex items-center gap-3">
+          <button id="btn-mobile-menu"
+            class="md:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+
+          <div class="flex flex-col">
+            <h1 id="topbar-title"
+              class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              <span>Dashboard</span>
+            </h1>
+            <span class="text-xs text-slate-500 hidden sm:inline-block" id="topbar-subtitle">Real-time savings
+              performance & goal insights</span>
+          </div>
+        </div>
+
+        <!-- Top Right Actions -->
+        <div class="flex items-center gap-2 sm:gap-3">
+
+          <!-- Fast Quick Deposit Button -->
+          <button id="btn-header-deposit"
+            class="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 font-semibold text-xs transition-colors">
+            <i data-lucide="arrow-down-circle" class="w-4 h-4 text-emerald-600"></i>
+            <span>Log Savings</span>
+          </button>
+
+          <!-- Notifications Bell -->
+          <button id="btn-header-notif"
+            class="relative p-2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+            title="Notifications">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="header-notif-dot"
+              class="hidden absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-amber-500 rounded-full ring-2 ring-white"></span>
+          </button>
+
+          <!-- User Profile Pill -->
+          <div class="flex items-center gap-2 pl-2 border-l border-slate-200">
+            <div
+              class="w-8 h-8 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center ring-2 ring-emerald-500/20">
+              AM
+            </div>
+            <div class="hidden lg:block text-left">
+              <p class="text-xs font-bold text-slate-800 leading-tight">Parineeta Meshram</p>
+              <p class="text-[10px] text-slate-500 font-medium">Standard Plan</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- SCROLLABLE PAGE CONTAINER -->
+      <main id="main-content" class="flex-1 overflow-y-auto px-4 py-6 sm:px-6 sm:py-8 md:px-8 pb-24 md:pb-8">
+
+        <!-- SECTION 1: DASHBOARD -->
+        <section id="section-dashboard" class="page-section"></section>
+
+        <!-- SECTION 2: CREATE SAVINGS GOAL -->
+        <section id="section-create-goal" class="page-section hidden"></section>
+
+        <!-- SECTION 3: MY GOALS -->
+        <section id="section-my-goals" class="page-section hidden"></section>
+
+        <!-- SECTION 4: AI FINANCIAL ADVICE -->
+        <section id="section-ai-advice" class="page-section hidden"></section>
+
+        <!-- SECTION 5: NOTIFICATIONS -->
+        <section id="section-notifications" class="page-section hidden"></section>
+
+      </main>
+
+    </div>
+
+    <!-- MOBILE BOTTOM NAVIGATION (Visible on small screens) -->
+    <nav
+      class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 px-2 flex items-center justify-around z-30 shadow-lg">
+      <button data-nav="dashboard"
+        class="mobile-nav-item flex flex-col items-center justify-center w-14 h-full text-slate-500 active-mobile-nav">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+        <span class="text-[10px] font-semibold mt-1">Dashboard</span>
+      </button>
+
+      <button data-nav="create-goal"
+        class="mobile-nav-item flex flex-col items-center justify-center w-14 h-full text-slate-500">
+        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+        <span class="text-[10px] font-semibold mt-1">New Goal</span>
+      </button>
+
+      <button data-nav="my-goals"
+        class="mobile-nav-item flex flex-col items-center justify-center w-14 h-full text-slate-500 relative">
+        <i data-lucide="target" class="w-5 h-5"></i>
+        <span class="text-[10px] font-semibold mt-1">My Goals</span>
+        <span id="mobile-goals-badge" class="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-500"></span>
+      </button>
+
+      <button data-nav="ai-advice"
+        class="mobile-nav-item flex flex-col items-center justify-center w-14 h-full text-slate-500">
+        <i data-lucide="bot" class="w-5 h-5"></i>
+        <span class="text-[10px] font-semibold mt-1">AI Advice</span>
+      </button>
+
+      <button data-nav="notifications"
+        class="mobile-nav-item flex flex-col items-center justify-center w-14 h-full text-slate-500 relative">
+        <i data-lucide="bell" class="w-5 h-5"></i>
+        <span class="text-[10px] font-semibold mt-1">Alerts</span>
+        <span id="mobile-notif-badge" class="hidden absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500"></span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- MOBILE SLIDEOUT DRAWER -->
+  <div id="mobile-drawer-backdrop"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+  <div id="mobile-drawer"
+    class="fixed inset-y-0 left-0 w-72 bg-slate-900 text-slate-200 z-50 transform -translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white">
+          <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
+        </div>
+        <span class="font-extrabold text-lg text-white">Save<span class="text-emerald-400">IQ</span></span>
+      </div>
+      <button id="btn-close-drawer" class="p-2 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <div class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+      <button data-nav="dashboard"
+        class="mobile-drawer-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">
+        <i data-lucide="layout-dashboard" class="w-5 h-5 text-emerald-400"></i>
+        <span>Dashboard</span>
+      </button>
+      <button data-nav="create-goal"
+        class="mobile-drawer-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">
+        <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-400"></i>
+        <span>Create Savings Goal</span>
+      </button>
+      <button data-nav="my-goals"
+        class="mobile-drawer-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">
+        <i data-lucide="target" class="w-5 h-5 text-emerald-400"></i>
+        <span>My Goals</span>
+      </button>
+      <button data-nav="ai-advice"
+        class="mobile-drawer-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">
+        <i data-lucide="bot" class="w-5 h-5 text-indigo-400"></i>
+        <span>AI Financial Advice</span>
+      </button>
+      <button data-nav="notifications"
+        class="mobile-drawer-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">
+        <i data-lucide="bell" class="w-5 h-5 text-amber-400"></i>
+        <span>Notifications</span>
+      </button>
+    </div>
+    <div class="p-5 border-t border-slate-800">
+      <button id="btn-mobile-reset-demo"
+        class="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center justify-center gap-2">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+        <span>Reset Demo Data</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL CONTAINER (Populated dynamically) -->
+  <div id="modal-container"></div>
+
+  <!-- TOAST NOTIFICATIONS CONTAINER -->
+  <div id="toast-container"
+    class="fixed bottom-20 md:bottom-6 right-6 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+  <!-- APP SCRIPTS -->
+  <script src="js/store.js"></script>
+  <script src="js/views/dashboardView.js"></script>
+  <script src="js/views/createGoalView.js"></script>
+  <script src="js/views/myGoalsView.js"></script>
+  <script src="js/views/aiAdviceView.js"></script>
+  <script src="js/views/notificationsView.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
